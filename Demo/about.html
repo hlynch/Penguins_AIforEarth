@@ -64,14 +64,33 @@
     </div>
     <div id="about-content" class="container-fluid">
         <div class="row">
-            <p> Temporary about page text: <p>
-            <p>
-                This demo uses the AI for Earth Penguin Guano Classification API. Visit the
-                <a href="https://www.microsoft.com/en-us/ai/ai-for-earth-apis" target="_blank"> API home page </a> for more information or to request an API key. 
-                The code used to train our model is available on <a href="https://github.com/iceberg-project/Penguins/tree/devel">GitHub</a>.<p>
-
-            <p>The API runs on the <a href="https://github.com/Microsoft/AIforEarth-API-Development" target="_blank">AI for Earth API backend</a>, which makes it easy for anyone working on machine learning for sustainability and environmental science to turn their models into APIs and Web-based applications.
-            If you’re working in this space and you need cloud computing resources to bring your work to life, check out our <a href="https://www.microsoft.com/en-us/ai-for-earth/grants" target="_blank">AI for Earth grants program</a>.</p>
+            <p> Welcome to the AI for Earth Penguin Guano Classification API!
+            
+            <p> Here we will demonstrate how our model can automatically detect penguin guano in Google Earth imagery. Why are we looking for penguin guano in the 
+                first place? Penguins are considered Antarctica’s “canaries in the coalmine” – by tracking the abundance
+                and distributions of penguins, we can keep an eye on the health of the Southern Ocean more generally. 
+                Penguin colonies, where penguins actually breed each austral summer, are spread out over thousands of miles 
+                of Antarctic coastline, and many of their colonies are either too remote or too enormous to survey directly. 
+                
+            <p> Luckily, however, penguins produce a lot of guano (excrement) as they sit patiently incubating their nests. 
+                In fact, the guano stain they produce is as large as the extent of the colony itself and can be visible in 
+                satellite imagery. So by tracking the guano stains around Antarctica, we can estimate how many penguins are 
+                at each colony in each year, information critical to our monitoring of population trends. The problem is that 
+                there is far too much satellite imagery for us to manually search for penguin guano, so we’ve trained a CNN 
+                (Convolutional Neural Network) that can identify guano stains for us. While our model was trained on imagery 
+                from DigitalGlobe, here we demonstrate how the model works using imagery from Google Earth.
+            
+            <p> You can check out the images in our gallery or, if you are feeling ambitious, try looking for penguin guano yourself. 
+                The Instructions tab provides information on how to download Google Earth imagery in a way that can be 
+                analyzed by our model. Once you download the imagery, you can upload it into our tool to see if our model finds 
+                any guano in the imagery you selected. 
+                
+            <p> Check us out on on <a href="https://github.com/iceberg-project/Penguins/tree/devel">GitHub</a> for more information
+                about the model behind the API. To learn more about the research behind the model, visit us at
+                <a href="https://lynchlab.com">LynchLab.com</a>.            
+            
+            <p> Visit the <a href="https://www.microsoft.com/en-us/ai/ai-for-earth-apis" target="_blank"> API home page </a> 
+                for more information or to request an API key. 
         </div>
 
     </div>
