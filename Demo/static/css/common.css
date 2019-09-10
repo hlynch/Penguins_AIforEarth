@@ -294,11 +294,12 @@ body {
 .prediction-modal-dialog,
 .prediction-modal-content {
     height: auto;
-    width: 340px;
+    width: 1000px;
     position: fixed !important;
     left:50%;
-    margin-left:-170px;
-    top: 25px;
+    margin-left:-325px;
+    top: 20px;
+    bottom: -5px;
 }
 
 .result-img-container {
@@ -306,17 +307,18 @@ body {
 }
 
 #result-img {
-    max-width: 190px;
-    max-height: 190px;
+    max-width: 900px;
+    max-height: 900px;
     width: auto;
     height: auto;
+    margin-left:-87px;
 }
 
 #prediction-modal .modal-title {
     font-family: Roboto,sans-serif;
-    font-size: 15px;
+    font-size: 18px;
     color: black !important;
-    margin-left: 50px;
+    margin-left: 370px;
 }
 
 .prediction-info {
