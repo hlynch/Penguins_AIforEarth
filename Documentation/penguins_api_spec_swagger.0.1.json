@@ -1,0 +1,101 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "AI for Earth Penguin Guano Classification API",
+      "version": "v0.1",
+      "description": "This specification represents the core [AI for Earth](https://www.microsoft.com/en-us/aiforearth) API offering. An access key is required for access."
+    },
+    "host": "aiforearth.azure-api.net",
+    "basePath": "/v0.1",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "name": "Ocp-Apim-Subscription-Key",
+        "in": "header"
+      },
+      "apiKeyQuery": {
+        "type": "apiKey",
+        "name": "subscription-key",
+        "in": "query"
+      }
+    },
+    "security": [
+      {
+        "apiKeyHeader": []
+      },
+      {
+        "apiKeyQuery": []
+      }
+    ],
+    "paths": {
+      "/penguins/classify": {
+        "post": {
+          "description": "This operation classifies the provided satellite image for guano segmentation. The provided image must be a (insert what the requirements are).\n\nA successful classification will return a link to an image file that can be accessed via an Azure storage blob. The following labels are possible with the corresponding color labels:\n- <b>No Data</b> - black (0, 0 ,0)\n- <b>Water</b> - blue (0, 0, 255)\n- <b>Guano</b> - red (255, 0, 0)\n- <b>Trees</b> - light green (128, 255, 128)\n- <b>Rock/Bare</b> - brown (128, 96, 96)",
+          "operationId": "5ab5905bb8d61f0e48853404",
+          "summary": "/penguin/classify",
+          "parameters": [
+            {
+              "name": "type",
+              "in": "query",
+              "description": "EXAMPLE: File type of the returned image. Supported values are:\n- jpeg",
+              "type": "string",
+              "default": "jpeg",
+              "enum": [
+                "jpeg"
+              ]
+            },
+            {
+              "name": "Content-Type",
+              "in": "header",
+              "description": "Media type of the request body. (What type of images we accept).",
+              "required": true,
+              "type": "string",
+              "enum": [
+                "image"
+              ]
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The response body will contain a link to the image file.  The image will be colored corresponding the the following labels:\n- <b>No Data</b> - black (0, 0 ,0)\n- <b>Water</b> - blue (0, 0, 255)\n- <b>Guano</b> - red (255, 0, 0)\n- <b>Trees</b> - light green (128, 255, 128)\n- <b>Rock/Bare</b> - brown (128, 96, 96)\n\nThe size of the output image will (insert size here, or state that it will be equal).",
+              "examples": {
+                "image/jpeg": "[binary image data]",
+                "image/tiff": "[binary image data]"
+              }
+            },
+            "400": {
+              "description": "Possible Errors: \n<ul>\n<li><b>InvalidImageFormat</b>\n<br/>Input data is not a valid image.</li>\n<li><b>InvalidImageSize</b>\n<br/>Input image is too large or too small.</li>\n</ul>"
+            },
+            "415": {
+              "description": "Unsupported media type in the request body. Currently only image/tiff is supported"
+            }
+          },
+          "produces": [
+            "image/jpeg",
+            "image/tiff",
+            "application/json"
+          ]
+        }
+      }
+    },
+    "definitions": {
+      "Image": {
+        "type": "object",
+        "required": [
+          "height",
+          "width"
+        ],
+        "properties": {
+          "height": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
