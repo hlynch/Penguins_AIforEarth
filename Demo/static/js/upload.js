@@ -22,22 +22,21 @@ function FileUploadOnChange() {
     })
 }
 
-// TODO will need to update this with our own classification url
 function UploadPostedFile() {
     BlockUI(!0), ProgressLoadingMsgs("Processing...");
+    console.log("trying upload");
     var e = new FormData;
+    e.append("type", "posted")
     e.append("file", $("#file-input")[0].files[0]),
+    console.log(e.get("file")),
     $.ajax({
-        url: "/v1/pytorch_api/classify", 
+        url: "/get-classification", 
         type: "POST",
-        data: e,
+        data : e,
         processData: !1,
         contentType: !1
     }).done(function(e) {
         GetImagePrediction(PredictionType.UploadedImage, e),
-        console.log("trying to print result"),
-        console.log(e),
-        console.log("upload posted"),
         $("#upload-modal").modal("hide"), $("#input-url").val(""), $("#file-input").val("")
     }).fail(function(e, o, l) {
         console.log("upload failed"),

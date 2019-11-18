@@ -308,10 +308,11 @@ body {
 
 #result-img {
     max-width: 900px;
-    max-height: 900px;
+    max-height: 530px;
     width: auto;
     height: auto;
-    margin-left:-87px;
+    overflow: hidden;
+    /*margin-left:-87px; */
 }
 
 #prediction-modal .modal-title {

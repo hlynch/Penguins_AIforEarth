@@ -13,6 +13,10 @@ from azure.storage.blob import BlockBlobService, PublicAccess
 import pytorch_classifier
 from io import BytesIO
 from os import getenv
+import requests
+
+# defining the api-endpoint  
+API_ENDPOINT = "https://52.180.95.115:80/v1/pytorch_api/classify"
 
 import uuid
 import sys
