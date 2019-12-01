@@ -31,7 +31,7 @@ def send_about():
 
 
 @app.route('/instructions.html')
-def send_about():
+def send_instructions():
 	return send_from_directory('', 'instructions.html')
 
 
