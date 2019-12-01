@@ -30,6 +30,11 @@ def send_about():
 	return send_from_directory('', 'about.html')
 
 
+@app.route('/instructions.html')
+def send_about():
+	return send_from_directory('', 'instructions.html')
+
+
 @app.route('/static/static-templates/<path:path>')
 def send_templates(path):
     return send_from_directory('static/static-templates', path)
