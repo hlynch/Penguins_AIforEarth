@@ -81,7 +81,22 @@ class UnetModel(BaseModel):
 
     def get_prediction(self,image_bytes):
 
-        img = Image.open(image_bytes)
+        if not image_bytes:
+            raise ValueError('Input image is empty')
+        try:
+            img = Image.open(image_bytes)
+        except:
+            raise ValueError('Cannot read the Input image')
+
+        if image.mode not in ('RGBA','RGB'):
+            raise AttributeError('Input image not in RGBA or RGB mode and cannot be processed.')
+        if image.mode =='RGBA':
+            image = image.convert(mode='RGB')
+        if img.size[0]<256 or img.size[1]<256:
+            raise ValueError('Input image size is too small, the minimum size is 256x256')
+
+        if img.size[0]>2048 or img.size[1]<2048:
+            raise ValueError('Input image size is too big, the maximum size is 2048x2048')
         img = img.resize((1024,1024))
         image_np = np.asarray(img, np.float)
         image_np = ((image_np/255)-0.5)*2

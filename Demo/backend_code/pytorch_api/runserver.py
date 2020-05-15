@@ -69,31 +69,38 @@ def process_request_data(request):
 def post(*args, **kwargs):
     print('Post called')
     image_bytes = kwargs.get('image_bytes')
-  #  out_im = model.get_prediction(image_bytes)
-    out_im = model.png_predict(image_bytes) 
+    ai4e_service.api_task_manager.UpdateTaskStatus(taskId, 'running - segmentating the image')
+    try:
+        out_im = model.png_predict(image_bytes) 
 
-    local_file_name = str(uuid.uuid4()).replace('-','') + '.png'
-    full_path_to_file = './' + local_file_name
-    print(full_path_to_file)
+        local_file_name = str(uuid.uuid4()).replace('-','') + '.png'
+        full_path_to_file = './' + local_file_name
+        print(full_path_to_file)
 
-    Image.fromarray(out_im).convert('L').save(full_path_to_file, format='png',mode='L')
-    
-    print(out_im.shape)
+        Image.fromarray(out_im).convert('L').save(full_path_to_file, format='png',mode='L')
+        
+        print(out_im.shape)
 
-    # Create the BlockBlockService that is used to call the Blob service for the storage account
-    block_blob_service = BlockBlobService(account_name='icebergblob', account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
-    # Create a container called 'quickstartblobs'.
-    container_name ='penguinapi'
-    block_blob_service.create_container(container_name)
+        try:
+        # Create the BlockBlockService that is used to call the Blob service for the storage account
+            block_blob_service = BlockBlobService(account_name='icebergblob', account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
+            # Create a container called 'penguinapi'.
+            container_name ='penguinapi'
+            block_blob_service.create_container(container_name)
 
-    # Set the permission so the blobs are public.
-    block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
-    # Upload the created file, use local_file_name for the blob name
-    block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
-    
-    # in this example we simply return the numerical ID of the most likely category determined
-    # by the model
-    return local_file_name
+            # Set the permission so the blobs are public.
+            block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
+            # Upload the created file, use local_file_name for the blob name
+            block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
+
+            ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
+        except 
+            raise IOError('Cannot save file to blob')
+
+        return local_file_name
+    except:
+        log.log_exception(sys.exc_info()[0], taskId)
+        ai4e_service.api_task_manager.FailTask(taskId, 'failed: ' + str(sys.exc_info()[0]))
 
 if __name__ == '__main__':
     app.run()
