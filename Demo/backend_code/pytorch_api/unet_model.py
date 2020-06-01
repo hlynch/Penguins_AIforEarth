@@ -77,49 +77,36 @@ class UnetModel(BaseModel):
         self.netG = networks.define_G(3, 1, 64,
                                       'unet_256', norm = 'instance')
         self.netG.load_state_dict(torch.load(model_path)) 
+        print(self.netG)
 
-
-    def get_prediction(self,image_bytes):
-
+    
+    def png_predict(self,image_bytes):
+        print('checkpoint')
+        img = Image.open(image_bytes)
         if not image_bytes:
             raise ValueError('Input image is empty')
+
         try:
             img = Image.open(image_bytes)
         except:
             raise ValueError('Cannot read the Input image')
 
-        if image.mode not in ('RGBA','RGB'):
+        if img.mode not in ('RGBA','RGB'):
             raise AttributeError('Input image not in RGBA or RGB mode and cannot be processed.')
-        if image.mode =='RGBA':
-            image = image.convert(mode='RGB')
+        if img.mode =='RGBA':
+            img = img.convert(mode='RGB')
         if img.size[0]<256 or img.size[1]<256:
             raise ValueError('Input image size is too small, the minimum size is 256x256')
 
-        if img.size[0]>2048 or img.size[1]<2048:
+        if img.size[0]>2048 or img.size[1]>2048:
             raise ValueError('Input image size is too big, the maximum size is 2048x2048')
-        img = img.resize((1024,1024))
-        image_np = np.asarray(img, np.float)
-        image_np = ((image_np/255)-0.5)*2
-        print(image_np.shape)
 
-        # swap color axis because numpy image is H x W x C, torch image is C X H X W
-        image_np = image_np.transpose((2, 0, 1))
-        image_np = image_np[:3, :, :] # Remove the alpha channel
-        image_np = np.expand_dims(image_np, axis=0)  # add a batch dimension
-        img_input = torch.from_numpy(image_np).type(torch.float32)
+#        img = img.resize((1024,1024))
+        #image_np = np.asarray(img, np.float)
+        #image_np = ((image_np/255)-0.5)*2
+        #print(image_np.shape)
 
-        self.input = Variable(img_input)
-        self.output = self.netG(self.input)
-        raw = self.output.data.cpu().float().numpy()
-        raw = np.transpose(raw,(0,2,3,1))
-        raw = raw[0,:,:,0]
-        raw = (raw +1) /2 
-        raw = (raw*255).astype(np.uint8)
-        print(raw.shape)
-        return raw
-    
-    def png_predict(self,image_bytes):
-        img = Image.open(image_bytes)
+        #img = Image.open(image_bytes)
         im = np.asarray(img)
 #        im = image_bytes
         last = time.time()
@@ -167,8 +154,13 @@ class UnetModel(BaseModel):
         outpng = np.squeeze(outpng) 
         outpng = (outpng + 1)/2
         out = outpng
-        outpng = outpng*255
-        return outpng
+        #outpng = outpng*255
+#        print(outpng.shape,im.shape)
+        
+        im = im * 0.9 
+        im[:,:,1] = im[:,:,1] + outpng * 100
+        im = im.astype(np.uint8)
+        return im#outpng
 
 
 
