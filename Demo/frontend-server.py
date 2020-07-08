@@ -15,7 +15,7 @@ import requests
 
 print("Running frontend server")
 
-API_ENDPOINT = "http://40.81.15.231:80/v1/pytorch_api/classify"
+API_ENDPOINT = "http://13.91.136.105:80/v1/pytorch_api/classify"
 
 app = Flask(__name__, static_url_path='')
 
