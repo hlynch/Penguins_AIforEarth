@@ -1,6 +1,6 @@
 # /ai4e_api_tools has been added to the PYTHONPATH, so we can reference those
 # libraries directly.
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 #from flask_restful import Resource, Api
 from ai4e_app_insights_wrapper import AI4EAppInsights
 from ai4e_service import APIService
@@ -101,8 +101,8 @@ def post(*args, **kwargs):
     #ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
 #    except:
 #        raise IOError('Cannot save file to blob')
-
-    return local_file_name
+	return_dict = {'image_link' : local_file_name}
+    return jsonify(return_dict)
  #   except:
  #       log.log_exception(sys.exc_info()[0], taskId)
  #       ai4e_service.api_task_manager.FailTask(taskId, 'failed: ' + str(sys.exc_info()[0]))
