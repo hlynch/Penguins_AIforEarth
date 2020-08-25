@@ -101,6 +101,8 @@ def post(*args, **kwargs):
     #ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
 #    except:
 #        raise IOError('Cannot save file to blob')
+
+	# TODO: we'll have to return an entire URL, not just the file name
 	return_dict = {'image_link' : local_file_name}
     return jsonify(return_dict)
  #   except:
