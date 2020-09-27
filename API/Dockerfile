@@ -2,11 +2,9 @@ FROM mcr.microsoft.com/aiforearth/base-py:1.13-cuda-9.0
 
 RUN pip3 install torch torchvision pillow numpy pandas
 RUN pip3 install azure==4.0.0 azure-storage==0.36.0 azure-storage-blob==1.5.0 
- 
 
 # Copy your API code
 COPY ./pytorch_api /app/pytorch_api/
-COPY ./supervisord.conf /etc/supervisord.conf
 # startup.sh is a helper script
 COPY ./startup.sh /
 RUN chmod +x /startup.sh
@@ -32,6 +30,11 @@ ENV PYTHONPATH="${PYTHONPATH}:/app/my_api/"
 ENV PYTHONUNBUFFERED=TRUE
 
 WORKDIR /app/pytorch_api
+
+# Run a script to get the model
+RUN apt-get install -y wget
+RUN chmod +x get-model.pl
+RUN perl get-model.pl
 
 # Expose the port that is to be used when calling your API
 EXPOSE 80

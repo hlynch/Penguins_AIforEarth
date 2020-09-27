@@ -85,11 +85,11 @@ class UnetModel(BaseModel):
 		self.netG = networks.define_G(3, 1, 64,
 									  'unet_256', norm = 'instance')
 		self.netG.load_state_dict(torch.load(model_path)) 
-		print(self.netG)
+		#print(self.netG)
 
 	
 	def png_predict(self,image_bytes):
-		print('checkpoint')
+		#print('checkpoint')
 		img = Image.open(image_bytes)
 		if not image_bytes:
 			raise ValueError('Input image is empty')
@@ -115,10 +115,10 @@ class UnetModel(BaseModel):
 		size = 256
 		w,h,c = im.shape
 		patches = png2patches(im,step,size)
-		print(patches.shape)
+		#print(patches.shape)
 		elapsed_time = time.time() - last
 		last = time.time()
-		print('im 2 patches: %0.4f'%(elapsed_time))
+		#print('im 2 patches: %0.4f'%(elapsed_time))
 
 		orishape = np.asarray(patches.shape)
 		orishape[-1] = 1

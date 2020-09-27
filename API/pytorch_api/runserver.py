@@ -1,24 +1,18 @@
-# /ai4e_api_tools has been added to the PYTHONPATH, so we can reference those
-# libraries directly.
 from flask import Flask, request, abort, jsonify
-#from flask_restful import Resource, Api
 from ai4e_app_insights_wrapper import AI4EAppInsights
 from ai4e_service import APIService
-#from sas_blob import SasBlob
 from PIL import Image
 from unet_model import UnetModel
-#from azure.storage.blob.blockblobservice import BlockBlobService,PublicAccess
 from azure.storage.blob import BlockBlobService, PublicAccess
-import pytorch_classifier
 from io import BytesIO
 from os import getenv
-import requests
 import numpy as np
-# defining the api-endpoint  
-#API_ENDPOINT = "https://52.180.95.115:80/v1/pytorch_api/classify"
-
 import uuid
 import sys
+
+
+# defining the api-endpoint  
+#API_ENDPOINT = "https://52.180.95.115:80/v1/pytorch_api/classify"
 
 print("Creating Application")
 
@@ -29,8 +23,10 @@ app = Flask(__name__)
 # Use the AI4EAppInsights library to send log messages.
 log = AI4EAppInsights()
 
-# Use the APIService to executes your functions within a logging trace, supports long-running/async functions,
-# handles SIGTERM signals from AKS, etc., and handles concurrent requests.
+# Use the APIService to executes your functions within a
+# logging trace, supports long-running/async functions,
+# handles SIGTERM signals from AKS, etc., and handles
+# concurrent requests.
 with app.app_context():
 	ai4e_service = APIService(app, log)
 
@@ -41,8 +37,7 @@ model_path = '/app/pytorch_api/300_net_G.pth'
 model = UnetModel()
 model.initialize(model_path)
 
-# Define a function for processing request data, if appliciable.  This function loads data or files into
-# a dictionary for access in your API function.  We pass this function as a parameter to your API setup.
+
 def process_request_data(request):
 	print('Processing data...')
 	return_values = {'image_bytes': None}
@@ -50,15 +45,16 @@ def process_request_data(request):
 		# Attempt to load the body
 		return_values['image_bytes'] = BytesIO(request.data)
 	except:
-		log.log_error('Unable to load the request data')   # Log to Application Insights
+		log.log_error('Unable to load the request data')
 	return return_values
+
 
 # POST, async API endpoint example
 @ai4e_service.api_sync_func(
 	api_path = '/classify', 
 	methods = ['POST'], 
-	request_processing_function = process_request_data, # This is the data process function that you created above.
-	maximum_concurrent_requests = 100, # If the number of requests exceed this limit, a 503 is returned to the caller.
+	request_processing_function = process_request_data,
+	maximum_concurrent_requests = 100,
 	content_types = ACCEPTED_CONTENT_TYPES,
 	content_max_length = 100000000, # In bytes
 	trace_name = 'post:classify')
@@ -84,7 +80,8 @@ def post(*args, **kwargs):
 
 #    try:
 	# Create the BlockBlockService that is used to call the Blob service for the storage account
-	block_blob_service = BlockBlobService(account_name='icebergblob', account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
+	block_blob_service = BlockBlobService(account_name='icebergblob',
+			account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
 	# Create a container called 'penguinapi'.
 	container_name ='penguinapi'
 	block_blob_service.create_container(container_name)
@@ -95,14 +92,14 @@ def post(*args, **kwargs):
 	print('logged to container')
 	# Upload the created file, use local_file_name for the blob name
 	block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
-	print('saved to container')
+	
+	url = block_blob_service.make_blob_url(container_name, local_file_name)
 
 	#ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
 #    except:
 #        raise IOError('Cannot save file to blob')
 
-	# TODO: we'll have to return an entire URL, not just the file name
-	return_dict = {'image_link' : local_file_name}
+	return_dict = {'image_url' : url}
 	return jsonify(return_dict)
  #   except:
  #       log.log_exception(sys.exc_info()[0], taskId)

@@ -49,7 +49,7 @@ def weights_init_kaiming(m):
 
 def weights_init_orthogonal(m):
     classname = m.__class__.__name__
-    print(classname)
+    #print(classname)
     if classname.find('Conv') != -1:
         init.orthogonal(m.weight.data, gain=1)
     elif classname.find('Linear') != -1:
@@ -60,7 +60,7 @@ def weights_init_orthogonal(m):
 
 
 def init_weights(net, init_type='normal'):
-    print('initialization method [%s]' % init_type)
+    #print('initialization method [%s]' % init_type)
     if init_type == 'normal':
         net.apply(weights_init_normal)
     elif init_type == 'xavier':

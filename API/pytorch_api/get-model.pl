@@ -14,7 +14,7 @@
 use strict;
 use POSIX;
 
-my $TEMP='gdown.cookie.temp';
+my $TEMP='get-model.cookie.temp';
 my $COMMAND;
 my $confirm;
 my $check;
