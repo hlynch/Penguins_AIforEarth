@@ -32,7 +32,7 @@ log = AI4EAppInsights()
 # Use the APIService to executes your functions within a logging trace, supports long-running/async functions,
 # handles SIGTERM signals from AKS, etc., and handles concurrent requests.
 with app.app_context():
-    ai4e_service = APIService(app, log)
+	ai4e_service = APIService(app, log)
 
 # Load the model
 # The model was copied to this location when the container was built; see ../Dockerfile
@@ -44,70 +44,70 @@ model.initialize(model_path)
 # Define a function for processing request data, if appliciable.  This function loads data or files into
 # a dictionary for access in your API function.  We pass this function as a parameter to your API setup.
 def process_request_data(request):
-    print('Processing data...')
-    return_values = {'image_bytes': None}
-    try:
-        # Attempt to load the body
-        return_values['image_bytes'] = BytesIO(request.data)
-    except:
-        log.log_error('Unable to load the request data')   # Log to Application Insights
-    return return_values
+	print('Processing data...')
+	return_values = {'image_bytes': None}
+	try:
+		# Attempt to load the body
+		return_values['image_bytes'] = BytesIO(request.data)
+	except:
+		log.log_error('Unable to load the request data')   # Log to Application Insights
+	return return_values
 
 # POST, async API endpoint example
 @ai4e_service.api_sync_func(
-    api_path = '/classify', 
-    methods = ['POST'], 
-    request_processing_function = process_request_data, # This is the data process function that you created above.
-    maximum_concurrent_requests = 5, # If the number of requests exceed this limit, a 503 is returned to the caller.
-    content_types = ACCEPTED_CONTENT_TYPES,
-    content_max_length = 1000000, # In bytes
-    trace_name = 'post:classify')
+	api_path = '/classify', 
+	methods = ['POST'], 
+	request_processing_function = process_request_data, # This is the data process function that you created above.
+	maximum_concurrent_requests = 5, # If the number of requests exceed this limit, a 503 is returned to the caller.
+	content_types = ACCEPTED_CONTENT_TYPES,
+	content_max_length = 1000000, # In bytes
+	trace_name = 'post:classify')
 
 
 
 def post(*args, **kwargs):
-    print('Post called')
-    image_bytes = kwargs.get('image_bytes')
-    print('reading image')
+	print('Post called')
+	image_bytes = kwargs.get('image_bytes')
+	print('reading image')
 #    ai4e_service.api_task_manager.UpdateTaskStatus(taskId, 'running - segmentating the image')
 #    try:
-    print('reading image')
-    out_im = model.png_predict(image_bytes) 
-    print('done prediction')
-    local_file_name = str(uuid.uuid4()).replace('-','') + '.png'
-    full_path_to_file = './' + local_file_name
-    print(full_path_to_file)
-    print(out_im.shape,out_im.dtype)
-    out_im[out_im>255] = 255
-    Image.fromarray(out_im.astype(np.uint8)).save(full_path_to_file)
-    
-    print(out_im.shape)
+	print('reading image')
+	out_im = model.png_predict(image_bytes) 
+	print('done prediction')
+	local_file_name = str(uuid.uuid4()).replace('-','') + '.png'
+	full_path_to_file = './' + local_file_name
+	print(full_path_to_file)
+	print(out_im.shape,out_im.dtype)
+	out_im[out_im>255] = 255
+	Image.fromarray(out_im.astype(np.uint8)).save(full_path_to_file)
+	
+	print(out_im.shape)
 
 #    try:
-    # Create the BlockBlockService that is used to call the Blob service for the storage account
-    block_blob_service = BlockBlobService(account_name='icebergblob', account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
-    # Create a container called 'penguinapi'.
-    container_name ='penguinapi'
-    block_blob_service.create_container(container_name)
+	# Create the BlockBlockService that is used to call the Blob service for the storage account
+	block_blob_service = BlockBlobService(account_name='icebergblob', account_key='b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA==')
+	# Create a container called 'penguinapi'.
+	container_name ='penguinapi'
+	block_blob_service.create_container(container_name)
 
-    # Set the permission so the blobs are public.
-    block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
+	# Set the permission so the blobs are public.
+	block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
 
-    print('logged to container')
-    # Upload the created file, use local_file_name for the blob name
-    block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
-    print('saved to container')
+	print('logged to container')
+	# Upload the created file, use local_file_name for the blob name
+	block_blob_service.create_blob_from_path(container_name, local_file_name, full_path_to_file)
+	print('saved to container')
 
-    #ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
+	#ai4e_service.api_task_manager.CompleteTask(taskId, 'completed')        
 #    except:
 #        raise IOError('Cannot save file to blob')
 
 	# TODO: we'll have to return an entire URL, not just the file name
 	return_dict = {'image_link' : local_file_name}
-    return jsonify(return_dict)
+	return jsonify(return_dict)
  #   except:
  #       log.log_exception(sys.exc_info()[0], taskId)
  #       ai4e_service.api_task_manager.FailTask(taskId, 'failed: ' + str(sys.exc_info()[0]))
 
 if __name__ == '__main__':
-    app.run()
+	app.run()
