@@ -15,7 +15,8 @@ import requests
 
 print("Running frontend server")
 
-API_ENDPOINT = "http://13.91.136.105:80/v1/pytorch_api/classify"
+#API_ENDPOINT = "http://13.91.136.105:80/v1/pytorch_api/classify"
+API_ENDPOINT = "http://192.168.110.142:8081/v1/pytorch_api/classify"
 
 app = Flask(__name__, static_url_path='')
 
@@ -64,7 +65,7 @@ def get_classification():
 		data = request.files.get('file', '')
 	r = requests.post(url = API_ENDPOINT, data = data, 
 			headers={'Content-Type': 'application/octet-stream'})
-	return 'https://icebergblob.blob.core.windows.net/penguinapi/' + r.text
+	return r.json()['image_url']
 
 
 if __name__ == '__main__':
