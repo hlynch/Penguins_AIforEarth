@@ -40,4 +40,4 @@ HEALTHCHECK --interval=1m --timeout=3s --start-period=20s \
 #ENTRYPOINT [ "/startup.sh" ]
 
 # Use the following entrypoint to debug issues.
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:80", "runserver:app"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:80", "--timeout", "600", "runserver:app"]
