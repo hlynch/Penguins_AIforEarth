@@ -35,12 +35,12 @@ with app.app_context():
 	ai4e_service = APIService(app, log)
 
 # Load the model
-# The model was copied to this location when the container was built; see ../Dockerfile
-#model_path = '/app/pytorch_api/iNat_2018_InceptionV3.pth.tar'
+# The model was copied to this location
+# when the container was built; see ../Dockerfile
 model_path = '/app/pytorch_api/300_net_G.pth'
-#model = pytorch_classifier.load_model(model_path)
 model = UnetModel()
 model.initialize(model_path)
+
 # Define a function for processing request data, if appliciable.  This function loads data or files into
 # a dictionary for access in your API function.  We pass this function as a parameter to your API setup.
 def process_request_data(request):
@@ -58,11 +58,10 @@ def process_request_data(request):
 	api_path = '/classify', 
 	methods = ['POST'], 
 	request_processing_function = process_request_data, # This is the data process function that you created above.
-	maximum_concurrent_requests = 5, # If the number of requests exceed this limit, a 503 is returned to the caller.
+	maximum_concurrent_requests = 100, # If the number of requests exceed this limit, a 503 is returned to the caller.
 	content_types = ACCEPTED_CONTENT_TYPES,
-	content_max_length = 1000000, # In bytes
+	content_max_length = 100000000, # In bytes
 	trace_name = 'post:classify')
-
 
 
 def post(*args, **kwargs):
