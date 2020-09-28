@@ -31,33 +31,39 @@
       }
     ],
     "paths": {
-      "/penguins/classify": {
+      "/classify": {
         "post": {
-          "description": "This operation classifies the provided satellite image for guano segmentation. The provided image's size must be at least 256x256 and at most 2048x2048 (TODO: any more requirements?).\n\nA successful classification will return a link to an image file that can be accessed via an Azure storage blob. The following labels are possible with the corresponding color labels:\n- <b>No Data</b> - black (0, 0 ,0)\n- <b>Water</b> - blue (0, 0, 255)\n- <b>Guano</b> - red (255, 0, 0)\n- <b>Trees</b> - light green (128, 255, 128)\n- <b>Rock/Bare</b> - brown (128, 96, 96)",
+          "description": "This operation classifies the provided satellite image for guano segmentation. The provided image must be RGB or RGBA, in jpeg or png format, and its size must be at least 256x256 and at most 2048x2048.\n\nA successful classification will return a link to an image file that can be accessed via an Azure storage blob. The following labels are possible with the corresponding color labels:\n- <b>No Data</b> - black (0, 0 ,0)\n- <b>Water</b> - blue (0, 0, 255)\n- <b>Guano</b> - red (255, 0, 0)\n- <b>Trees</b> - light green (128, 255, 128)\n- <b>Rock/Bare</b> - brown (128, 96, 96)",
           "operationId": "0",
-          "summary": "/penguin/classify",
+          "summary": "/classify",
           "parameters": [
             {
               "name": "Content-Type",
               "in": "header",
-              "description": "(TODO: what type of image format(s) do we accept) Media type of the request body.",
+              "description": "Media type of the request body. Supported formats are:\n- png\n- jpeg",
               "required": true,
               "type": "string",
               "format": "binary",
               "enum": [
-                "image"
+                "png",
+                "jpeg"
               ]
             }
           ],
           "responses": {
             "200": {
-              "description": "The response will contain a link to the image file in the 'image_link' field.  (TODO: describe output image colors -- doesn't need to be so specific. I just made up those numbers I think) The image will be colored corresponding the the following labels:\n- <b>No Data</b> - black (0, 0 ,0)\n- <b>Water</b> - blue (0, 0, 255)\n- <b>Guano</b> - red (255, 0, 0)\n- <b>Trees</b> - light green (128, 255, 128)\n- <b>Rock/Bare</b> - brown (128, 96, 96)\n\nThe size of the output image will (TODO: describe output size -- if it is the same just say that)."
+              "description": "The response will contain a link to the image file in the 'image_url' field.",
+              "examples": {
+                "application/json": {
+                  "image_url" : "https://example.blob.core.windows.net/example.png",
+                }
+              }
             },
             "400": {
-              "description": "Possible Errors: \n<ul>\n<li><b>InvalidImageAttribute</b>\n<br/>Input image is not in RGBA or RGB mode.</li><li><b>InvalidImageSize</b>\n<br/>Input image is too large or too small.</li>\n</ul>"
+              "description": "Possible Errors: \n<ul>\n<li><b>AttributeError</b>\n<br/>Input image is empty or is not in RGB or RGBA mode.</li><li><b>ValueError</b>\n<br/>Input image is too large or too small.</li>\n</ul>"
             },
-            "415": {
-              "description": "Unsupported media type in the request body. (TODO: What image types do we accept? Also, have to enforce this in code)"
+            "500": {
+              "description": "Unsupported media type in the request body or other internal server error."
             }
           },
           "produces": [

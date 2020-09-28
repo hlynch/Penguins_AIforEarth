@@ -17,7 +17,8 @@ ACCEPTED_CONTENT_TYPES = ['image/png', 'application/octet-stream', 'image/jpeg']
 # TODO: these should probably be dynamically set or replaced with "insert your key/name here"
 ACCT_NAME = 'icebergblob' # name of the blob to store clsasified images to
 ACCT_KEY = 'b+sB+qbZvfqR81KThZwor2DjZmkEEo0X1/rpbxUdeIoJUoeIwUSelTnAoULyVtnxdxc8hc2MLMusA0PTFeusuA=='
-blob_access_duration_hrs = 1 # TODO: this is not currently implemented
+blob_access_duration_hrs = 1 # TODO: not currently implemented
+
 app = Flask(__name__)
 
 # Use the AI4EAppInsights library to send log messages.
@@ -49,7 +50,7 @@ def process_request_data(request):
 
 
 # POST, async API endpoint example
-@ai4e_service.api_sync_func(
+@ai4e_service.api_async_func(
 	api_path = '/classify', 
 	methods = ['POST'], 
 	request_processing_function = process_request_data,
@@ -60,24 +61,27 @@ def process_request_data(request):
 
 
 def post(*args, **kwargs):
-	image_bytes = kwargs.get('image_bytes')
 	print('runserver.py: classifying image')
+	image_bytes = kwargs.get('image_bytes')
+	taskId = kwargs.get('taskId')
 	try:
 		# classifying image
+		ai4e_service.api_task_manager.UpdateTaskStatus(taskId, 'running - classifying image')
 		out_im = model.png_predict(image_bytes) 
-
 		local_file_name = str(uuid.uuid4()).replace('-','') + '.png'
 		full_path_to_file = './' + local_file_name
 		out_im[out_im>255] = 255
 		Image.fromarray(out_im.astype(np.uint8)).save(full_path_to_file)
 
+		ai4e_service.api_task_manager.UpdateTaskStatus(taskId, 'running - saving image to blob')
 		# Create the BlockBlockService that is used to call the Blob service for the storage account
 		# TODO: i think we can use here once deployed account_key=getenv('STORAGE_ACCOUNT_KEY'))
 		block_blob_service = BlockBlobService(account_name=ACCT_NAME, account_key=ACCT_KEY)
-
+		
+		# unique random generated container name
 		container_name = str(uuid.uuid4()).replace('-','')
-
-		# Create a container
+		
+		# Create a container 
 		block_blob_service.create_container(container_name)
 
 		# Set the permission so the blobs are public.
@@ -88,13 +92,12 @@ def post(*args, **kwargs):
 		
 		# get the URL of the classified image in our blob
 		url = block_blob_service.make_blob_url(container_name, local_file_name)
-
+		
 		print('runserver.py: finished image (' + url + ')')
-		return_dict = {'image_url' : url}
-		return jsonify(return_dict)
+		ai4e_service.api_task_manager.CompleteTask(taskId, 'completed - output written to: ' + url)
 	except Exception as err:
-		log.log_exception(sys.exc_info()[0])
-		abort(400, '{0}: {1}'.format(type(err).__name__, err))
+		log.log_exception(sys.exc_info()[0], taskID)
+		ai4e_service.api_task_manager.FailTask(taskId, 'failed: ' + '{0}: {1}'.format(type(err).__name__, err))
 
 
 if __name__ == '__main__':
