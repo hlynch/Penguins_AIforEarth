@@ -33,7 +33,7 @@
     "paths": {
       "/classify": {
         "post": {
-          "description": "This operation classifies the provided satellite image for guano segmentation. The provided image must be RGB or RGBA, in jpeg or png format, and its size must be at least 256x256 and at most 2048x2048.\n\nA successful classification will return a link to an image file that can be accessed via an Azure storage blob. The following labels are possible with the corresponding color labels:\n- <b>Not Guano</b> - black (0, 0 ,0)\n- <b>Guano</b> - green (0, 255, 0)",
+          "description": "This operation classifies the provided satellite image for guano segmentation. The provided image must be RGB or RGBA, in jpeg or png format, and its size must be at least 256x256 and at most 2048x2048.\n\nA successful classification will return a link to an image file that can be accessed via an Azure storage blob, with pixels classified as guano being shaded with green.",
           "operationId": "0",
           "summary": "/classify",
           "parameters": [
